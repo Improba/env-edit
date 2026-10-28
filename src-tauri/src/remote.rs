@@ -227,8 +227,11 @@ trap - EXIT HUP INT TERM
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(target_os = "linux")]
     use sha2::{Digest, Sha256};
+    #[cfg(target_os = "linux")]
     use std::fs;
+    #[cfg(target_os = "linux")]
     use std::time::{SystemTime, UNIX_EPOCH};
     #[test]
     fn rejects_unsafe_targets() {
@@ -257,6 +260,7 @@ mod tests {
         );
     }
 
+    #[cfg(target_os = "linux")]
     #[test]
     fn remote_save_script_preserves_original_on_conflict_and_keeps_backup() {
         let nonce = SystemTime::now()
