@@ -3,6 +3,7 @@
 import { config, flushPromises, mount } from '@vue/test-utils'
 import { Dialog, Notify, Quasar } from 'quasar'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import packageInfo from '../package.json'
 import App from './App.vue'
 
 const { invoke, writeText, openDirectory } = vi.hoisted(() => ({ invoke: vi.fn(), writeText: vi.fn(), openDirectory: vi.fn() }))
@@ -91,7 +92,7 @@ describe('parcours principal portable', () => {
     expect(invoke).toHaveBeenCalledWith('open_env_file', { path: '/fixture/project/.env' })
     expect(wrapper.findAll('input').some((input) => input.element.value === 'APP_URL')).toBe(true)
     expect(wrapper.text()).toContain('1 variable(s) affichée(s)')
-    expect(wrapper.text()).toContain('v0.4.4')
+    expect(wrapper.text()).toContain(`v${packageInfo.version}`)
     wrapper.unmount()
   })
 

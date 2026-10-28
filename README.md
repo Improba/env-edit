@@ -132,6 +132,12 @@ Pour produire les paquets Linux :
 npm run tauri build -- --bundles deb,appimage
 ```
 
+Ils sont écrits sous `src-tauri/target/release/bundle/`. Le paquet Debian s'installe
+avec `sudo apt install ./EnvEdit_1.0.0_amd64.deb` depuis son dossier. L'AppImage se lance
+après `chmod +x EnvEdit_1.0.0_amd64.AppImage`. Ces paquets ne contiennent pas le backend
+Python. Les projets locaux restent hors ligne ; seuls les projets SSH utilisent une
+connexion configurée explicitement par l'utilisateur.
+
 ## Préparer une release GitHub
 
 La version cible est choisie **avant** le tag. Créer une branche `release/X.Y.Z`,
@@ -152,12 +158,12 @@ Le contrôle de version se lance aussi localement avec
 installateurs avant de publier manuellement le brouillon. Ne pas déplacer un tag déjà
 publié : corriger sur une nouvelle version si nécessaire.
 
-Exemple de préparation de `0.5.0` une fois les versions modifiées et la PR validée :
+Exemple pour `1.0.0` une fois les versions modifiées et la PR validée :
 
 ```bash
-node scripts/check-release-version.mjs v0.5.0
-git tag -a v0.5.0 -m "EnvEdit 0.5.0"
-git push origin v0.5.0
+node scripts/check-release-version.mjs v1.0.0
+git tag -a v1.0.0 -m "EnvEdit 1.0.0"
+git push origin v1.0.0
 ```
 
 La CI produit des builds Windows/macOS **expérimentaux** ; elle ne valide pas encore
@@ -165,12 +171,6 @@ les parcours manuels et la parité de sauvegarde exigés par `ACCEPTANCE.md`. Le
 distribution comme versions prises en charge reste différée. Les installateurs ne
 sont pas encore signés ni, pour macOS, notarisés. Aucun déploiement n'est déclenché
 par les pull requests ou par la branche de préparation.
-
-Ils sont écrits sous `src-tauri/target/release/bundle/`. Le paquet Debian s'installe
-avec `sudo apt install ./EnvEdit_0.4.4_amd64.deb` depuis son dossier. L'AppImage se lance
-après `chmod +x EnvEdit_0.4.4_amd64.AppImage`. Ces paquets ne contiennent pas le backend
-Python. Les projets locaux restent hors ligne ; seuls les projets SSH utilisent une
-connexion configurée explicitement par l'utilisateur.
 
 La configuration réside dans `$XDG_CONFIG_HOME/envedit/catalog.json` (ou
 `~/.config/envedit/catalog.json`). Elle contient les sections, leurs noms et les chemins des
