@@ -1,6 +1,8 @@
 # Préparation de la version 1.0.0
 
-Branche de validation : `release/1.0.0`. Aucun tag ni release publiée à ce stade.
+Historique de préparation : la branche `release/1.0.0` a été fusionnée dans `main`.
+Le processus courant prépare désormais les releases directement sur `main` ; cette
+branche de validation reste un cas ponctuel. Aucun tag ni release publiée à ce stade.
 
 ## Vérifications effectuées localement
 

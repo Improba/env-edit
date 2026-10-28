@@ -1,10 +1,9 @@
-name: Prepare release
+name: Validate main
 
 on:
   push:
     branches:
       - main
-      - 'release/**'
   pull_request:
     branches:
       - main
@@ -13,20 +12,52 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: validate-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  build:
+  linux:
+    name: Linux tests and .deb
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+      - name: Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
+      - run: npm ci
+      - run: npm test
+      - name: Rust tests
+        run: cargo test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Build Debian package
+        run: npm run tauri build -- --bundles deb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: envedit-Linux-X64
+          path: src-tauri/target/release/bundle/deb/*.deb
+          if-no-files-found: error
+          retention-days: 14
+
+  portable-builds:
     name: ${{ matrix.name }}
+    if: github.event_name != 'pull_request'
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: Linux
-            os: ubuntu-22.04
-            bundles: deb
-          - name: Windows (experimental)
+          - name: Windows build (experimental)
             os: windows-latest
             bundles: nsis
-          - name: macOS (experimental)
+          - name: macOS build (experimental)
             os: macos-latest
             bundles: dmg
     runs-on: ${{ matrix.os }}
@@ -37,17 +68,11 @@ jobs:
           node-version: '22'
           cache: npm
       - uses: dtolnay/rust-toolchain@stable
-      - name: Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
       - run: npm ci
-      - run: npm test
-      - run: npm run build
-      - name: Rust tests
-        run: cargo test --locked --manifest-path src-tauri/Cargo.toml
-      - name: Build installers for review
+      - name: Build experimental installer
         run: npm run tauri build -- --bundles ${{ matrix.bundles }}
       - uses: actions/upload-artifact@v4
         with:

@@ -140,28 +140,42 @@ connexion configurée explicitement par l'utilisateur.
 
 ## Préparer une release GitHub
 
-La version cible est choisie **avant** le tag. Créer une branche `release/X.Y.Z`,
-mettre à jour ensemble les versions de `package.json`, `package-lock.json`,
-`src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` et `src-tauri/tauri.conf.json`, puis
-ouvrir une pull request vers `main`. Le workflow `Prepare release` exécute les tests
-et construit des installateurs `.deb`, `.exe` et `.dmg` à consulter dans les artefacts
-de la CI. Corriger sur cette branche et relancer la validation autant que nécessaire.
+La préparation se fait normalement **sur `main`, en local**. Mettre d'abord `main` à
+jour, choisir la version cible et aligner `package.json`, `package-lock.json`,
+`src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` et `src-tauri/tauri.conf.json`.
+Exécuter les tests et construire/essayer le `.deb` sur des fixtures sans secret réel.
+Faire une revue de sécurité et de qualité si nécessaire. Si un contrôle échoue,
+corriger sur `main` et recommencer ; une branche `release/*` reste possible pour
+une stabilisation exceptionnelle, mais n'est pas imposée.
 
-Après fusion, attendre que la CI du **commit final sur `main`** soit verte. Le workflow
-de publication vérifie ce résultat pour le SHA exact du tag et refuse de continuer si
-la préparation n'a pas réussi sur `main`.
-Créer alors le tag annoté `vX.Y.Z` sur ce commit et le pousser. Le workflow
-`Publish release draft` vérifie la cohérence des versions, relance les tests,
-reconstruit les paquets pour ce commit et les joint à une **release GitHub en brouillon**.
-Le contrôle de version se lance aussi localement avec
-`node scripts/check-release-version.mjs vX.Y.Z`. Examiner les trois jobs et les
-installateurs avant de publier manuellement le brouillon. Ne pas déplacer un tag déjà
-publié : corriger sur une nouvelle version si nécessaire.
+Après le push, attendre que `Validate main` soit vert pour le **SHA exact** retenu.
+Ce workflow exécute les tests frontend et Rust sous Linux et construit le `.deb` ;
+sur `main` seulement, il construit également les installateurs Windows et macOS
+expérimentaux. Une PR éventuelle ne lance que le job Linux. Le workflow du tag
+refuse de publier si le même commit n'a pas réussi sur `main`.
 
-Exemple pour `1.0.0` une fois les versions modifiées et la PR validée :
+Créer alors le tag annoté `vX.Y.Z` sur ce commit. `Publish release draft` vérifie
+les versions et reconstruit les paquets pour ce même SHA, sans répéter les suites
+de tests déjà validées. Les fichiers sont joints à une **release en brouillon** :
+examiner les installateurs avant de la publier manuellement. Ne pas déplacer un
+tag déjà publié ; corriger sur une nouvelle version si nécessaire.
+
+Exemple pour `1.0.0` :
 
 ```bash
+git switch main
+git pull --ff-only origin main
+# Aligner les cinq fichiers de version, puis effectuer la revue locale.
 node scripts/check-release-version.mjs v1.0.0
+npm ci
+npm test
+cargo test --locked --manifest-path src-tauri/Cargo.toml
+npm run tauri build -- --bundles deb
+git diff --check
+git add package.json package-lock.json src-tauri/Cargo.toml src-tauri/Cargo.lock src-tauri/tauri.conf.json
+git commit -m "Prepare EnvEdit 1.0.0"
+git push origin main
+# Attendre le succès de Validate main pour le commit courant.
 git tag -a v1.0.0 -m "EnvEdit 1.0.0"
 git push origin v1.0.0
 ```
@@ -170,7 +184,7 @@ La CI produit des builds Windows/macOS **expérimentaux** ; elle ne valide pas e
 les parcours manuels et la parité de sauvegarde exigés par `ACCEPTANCE.md`. Leur
 distribution comme versions prises en charge reste différée. Les installateurs ne
 sont pas encore signés ni, pour macOS, notarisés. Aucun déploiement n'est déclenché
-par les pull requests ou par la branche de préparation.
+par une PR ni par un simple push sur `main`.
 
 La configuration réside dans `$XDG_CONFIG_HOME/envedit/catalog.json` (ou
 `~/.config/envedit/catalog.json`). Elle contient les sections, leurs noms et les chemins des
