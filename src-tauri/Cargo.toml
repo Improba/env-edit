@@ -1,6 +1,6 @@
 [package]
 name = "envedit"
-version = "0.4.4"
+version = "1.0.0"
 description = "Portable, conservative dotenv editor"
 authors = ["EnvEdit contributors"]
 edition = "2021"
