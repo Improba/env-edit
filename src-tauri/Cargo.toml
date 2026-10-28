@@ -1,0 +1,30 @@
+[package]
+name = "envedit"
+version = "0.4.4"
+description = "Portable, conservative dotenv editor"
+authors = ["EnvEdit contributors"]
+edition = "2021"
+
+[lib]
+name = "envedit_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tauri = { version = "2", features = [] }
+tauri-plugin-clipboard-manager = "2.5.0"
+tauri-plugin-dialog = "2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+strip = true

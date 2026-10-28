@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+dist/
+src-tauri/target/
+
+# Secrets locaux : seuls les fichiers d'exemple explicitement nommés peuvent être suivis.
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.exemple
+.aws/
+.codex/
