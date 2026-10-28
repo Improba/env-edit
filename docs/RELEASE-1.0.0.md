@@ -18,8 +18,12 @@ Branche de validation : `release/1.0.0`. Aucun tag ni release publiée à ce sta
 
 ## Validation manuelle encore nécessaire
 
-L'installation système n'a pas été exécutée : `sudo` demande le mot de passe de
-l'utilisateur. Depuis la racine du dépôt, installer le paquet avec :
+Le propriétaire du projet a installé localement le `.deb` 1.0.0 et indique que
+l'application « semble fonctionnelle ». Ce retour confirme l'installation et un
+premier essai utilisateur, sans constituer une validation exhaustive des critères
+ci-dessous. L'agent n'a pas exécuté lui-même l'installation système : `sudo`
+demande le mot de passe de l'utilisateur. Pour réinstaller depuis la racine du
+dépôt :
 
 ```bash
 sudo apt install ./src-tauri/target/release/bundle/deb/EnvEdit_1.0.0_amd64.deb
