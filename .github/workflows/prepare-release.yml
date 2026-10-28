@@ -21,8 +21,8 @@ jobs:
     name: Linux tests and .deb
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: npm
@@ -40,7 +40,7 @@ jobs:
         run: cargo test --locked --manifest-path src-tauri/Cargo.toml
       - name: Build Debian package
         run: npm run tauri build -- --bundles deb
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: envedit-Linux-X64
           path: src-tauri/target/release/bundle/deb/*.deb
@@ -62,8 +62,8 @@ jobs:
             bundles: dmg
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: npm
@@ -74,7 +74,7 @@ jobs:
       - run: npm ci
       - name: Build experimental installer
         run: npm run tauri build -- --bundles ${{ matrix.bundles }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: envedit-${{ runner.os }}-${{ runner.arch }}
           path: src-tauri/target/release/bundle/
