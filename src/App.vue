@@ -9,6 +9,7 @@ import { compareEnvKeys, filterVariables, isBlankValue, isSensitiveKey, newlyBla
 import packageInfo from '../package.json'
 import ProjectTree from './ProjectTree.vue'
 import SectionTree from './SectionTree.vue'
+import { displayPath } from './displayPath'
 
 const $q = useQuasar()
 const catalog = ref<ProjectCatalog>({ sections: [], unsectionedProjects: [] })
@@ -199,7 +200,7 @@ async function saveCurrent() {
       const removed = originalVariables.value.filter((variable) => !after.has(variable.id)).map((variable) => variable.key)
       const confirmed = await new Promise<boolean>((resolve) => {
         $q.dialog({ title: selectedSsh.value ? 'Confirmer la sauvegarde distante' : 'Confirmer la sauvegarde',
-          message: `${selectedProject.value?.name} · ${selectedFile.value?.path}\nClés modifiées ou ajoutées : ${changed.join(', ') || 'aucune'}\nClés supprimées : ${removed.join(', ') || 'aucune'}${blankWarning}${selectedSsh.value ? '\nUne sauvegarde de l’ancienne version sera créée sur le serveur.' : ''}`,
+          message: `${selectedProject.value?.name} · ${displayPath(selectedFile.value?.path ?? '')}\nClés modifiées ou ajoutées : ${changed.join(', ') || 'aucune'}\nClés supprimées : ${removed.join(', ') || 'aucune'}${blankWarning}${selectedSsh.value ? '\nUne sauvegarde de l’ancienne version sera créée sur le serveur.' : ''}`,
           cancel: { label: 'Annuler', flat: true }, ok: { label: blankKeys.length ? 'Enregistrer quand même' : 'Enregistrer', color: 'warning' }, persistent: true,
         }).onOk(() => resolve(true)).onCancel(() => resolve(false))
       })
@@ -439,7 +440,7 @@ async function unlockEditing() {
   if (!sessionId.value || !selectedFile.value || !selectedProject.value) return
   const confirmed = await new Promise<boolean>((resolve) => {
     $q.dialog({ title: `Activer l’édition ${selectedEnvironment.value === 'production' ? 'production' : 'préproduction'} ?`,
-      message: `${selectedProject.value?.name} · ${selectedFile.value?.path}`,
+      message: `${selectedProject.value?.name} · ${displayPath(selectedFile.value?.path ?? '')}`,
       cancel: { label: 'Annuler', flat: true }, ok: { label: 'Activer pour ce fichier', color: 'warning' }, persistent: true,
     }).onOk(() => resolve(true)).onCancel(() => resolve(false))
   })
@@ -753,7 +754,7 @@ function removeVariable(id: string) {
           <div class="editor-heading">
             <div>
               <div class="file-title"><span v-if="dirty" class="dirty-dot">●</span>{{ selectedFile.name }}</div>
-              <div class="file-path">{{ selectedFile.path }}</div>
+              <div class="file-path">{{ displayPath(selectedFile.path) }}</div>
               <div v-if="selectedProject" class="remote-status">
                 <q-badge :color="selectedEnvironment === 'production' ? 'negative' : selectedEnvironment === 'preproduction' ? 'warning' : 'info'">
                   {{ selectedSsh ? 'SSH' : 'LOCAL' }} · {{ selectedEnvironment === 'production' ? 'PRODUCTION' : selectedEnvironment === 'preproduction' ? 'PRÉPRODUCTION' : 'DÉVELOPPEMENT' }}
@@ -896,7 +897,7 @@ function removeVariable(id: string) {
           <div class="text-body2 q-mb-md">Choisissez le dossier contenant les fichiers .env du projet.</div>
           <q-input v-model="localName" outlined label="Nom du projet" class="q-mb-md" />
           <q-btn outline no-caps color="primary" icon="folder_open" label="Choisir un dossier…" @click="chooseLocalDirectory" />
-          <div v-if="localDirectory" class="project-local-path" :title="localDirectory">{{ localDirectory }}</div>
+          <div v-if="localDirectory" class="project-local-path" :title="displayPath(localDirectory)">{{ displayPath(localDirectory) }}</div>
           <q-select v-model="localEnvironment" outlined emit-value map-options label="Environnement" class="q-mt-md" :options="environmentOptions" />
           <div class="text-caption q-mt-sm">Préproduction et production s'ouvrent en lecture seule.</div>
         </q-card-section>

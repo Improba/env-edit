@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EnvFile, Project, ProjectSection } from './model'
+import { displayPath } from './displayPath'
 
 withDefaults(defineProps<{
   projects: Project[]
@@ -58,7 +59,7 @@ function toggleProject(project: Project) {
           </q-list>
         </q-menu>
       </q-btn>
-      <q-tooltip>{{ project.path }}</q-tooltip>
+      <q-tooltip>{{ displayPath(project.path) }}</q-tooltip>
     </div>
     <div v-if="project.expanded" class="tree-children" :style="{ marginLeft: `${25 + depth * 18}px` }">
       <div v-if="project.loadingFiles" class="tree-empty q-mini-drawer-hide"><q-spinner size="15px" class="q-mr-xs" /> Connexion SSH…</div>
