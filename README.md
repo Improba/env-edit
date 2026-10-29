@@ -154,11 +154,13 @@ sur `main` seulement, il construit également les installateurs Windows et macOS
 expérimentaux. Une PR éventuelle ne lance que le job Linux. Le workflow du tag
 refuse de publier si le même commit n'a pas réussi sur `main`.
 
-Créer alors le tag annoté `vX.Y.Z` sur ce commit. `Publish release draft` vérifie
+Créer alors le tag annoté `vX.Y.Z` sur ce commit. `Publish release` vérifie
 les versions et reconstruit les paquets pour ce même SHA, sans répéter les suites
-de tests déjà validées. Les fichiers sont joints à une **release en brouillon** :
-examiner les installateurs avant de la publier manuellement. Ne pas déplacer un
-tag déjà publié ; corriger sur une nouvelle version si nécessaire.
+de tests déjà validées. Les fichiers sont joints directement à une **release publiée**
+et téléchargeables individuellement depuis GitHub Releases, sans décompresser les
+artefacts des runs. Le paquet macOS reste expérimental tant que son installation et
+ses parcours fonctionnels n'ont pas été vérifiés. Ne pas déplacer un tag déjà publié ;
+corriger sur une nouvelle version si nécessaire.
 
 Exemple pour `1.0.0` :
 

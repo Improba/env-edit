@@ -1,4 +1,4 @@
-name: Publish release draft
+name: Publish release
 
 on:
   push:
@@ -67,8 +67,9 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: EnvEdit ${{ github.ref_name }}
           releaseBody: |
-            Version Linux à vérifier avant publication.
-            Installateurs Windows et macOS expérimentaux : validation fonctionnelle différée.
-          releaseDraft: true
+            Paquet Linux et installateur Windows testés manuellement.
+            Installateur macOS expérimental : validation fonctionnelle à venir.
+            Les installateurs ne sont pas signés ni notarisés.
+          releaseDraft: false
           prerelease: false
           args: --bundles ${{ matrix.bundles }}
