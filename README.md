@@ -140,19 +140,20 @@ connexion configurée explicitement par l'utilisateur.
 
 ## Préparer une release GitHub
 
-La préparation se fait normalement **sur `main`, en local**. Mettre d'abord `main` à
-jour, choisir la version cible et aligner `package.json`, `package-lock.json`,
+La préparation se fait **en local à partir du dernier `main`**, puis se fusionne par PR
+une fois les contrôles réussis. Mettre d'abord `main` à jour, créer une branche courte,
+choisir la version cible et aligner `package.json`, `package-lock.json`,
 `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` et `src-tauri/tauri.conf.json`.
 Exécuter les tests et construire/essayer le `.deb` sur des fixtures sans secret réel.
 Faire une revue de sécurité et de qualité si nécessaire. Si un contrôle échoue,
-corriger sur `main` et recommencer ; une branche `release/*` reste possible pour
-une stabilisation exceptionnelle, mais n'est pas imposée.
+corriger sur la branche et recommencer. Fusionner seulement lorsque le check Linux de
+la PR est vert. Une branche `release/*` durable n'est pas imposée.
 
 Après le push, attendre que `Validate main` soit vert pour le **SHA exact** retenu.
 Ce workflow exécute les tests frontend et Rust sous Linux et construit le `.deb` ;
 sur `main` seulement, il construit également les installateurs Windows et macOS
-expérimentaux. Une PR éventuelle ne lance que le job Linux. Le workflow du tag
-refuse de publier si le même commit n'a pas réussi sur `main`.
+expérimentaux. La PR ne lance que le job Linux. Le workflow du tag refuse de publier
+si le même commit n'est pas la pointe de `main` ou n'a pas réussi sur `main`.
 
 Créer alors le tag annoté `vX.Y.Z` sur ce commit. `Publish release` vérifie
 les versions et reconstruit les paquets pour ce même SHA, sans répéter les suites
@@ -168,24 +169,28 @@ Les protections GitHub de `main`, des tags et des Actions sont décrites dans
 [`docs/GITHUB-SECURITY.md`](docs/GITHUB-SECURITY.md). Elles doivent être activées dans les
 paramètres du dépôt : le fichier de workflow ne suffit pas à protéger les références Git.
 
-Exemple pour `1.0.0` :
+Exemple pour une prochaine version `X.Y.Z` (remplacer par la version réelle) :
 
 ```bash
 git switch main
 git pull --ff-only origin main
+git switch -c prepare-vX.Y.Z
 # Aligner les cinq fichiers de version, puis effectuer la revue locale.
-node scripts/check-release-version.mjs v1.0.0
+node scripts/check-release-version.mjs vX.Y.Z
 npm ci
 npm test
 cargo test --locked --manifest-path src-tauri/Cargo.toml
 npm run tauri build -- --bundles deb
 git diff --check
 git add package.json package-lock.json src-tauri/Cargo.toml src-tauri/Cargo.lock src-tauri/tauri.conf.json
-git commit -m "Prepare EnvEdit 1.0.0"
-git push origin main
-# Attendre le succès de Validate main pour le commit courant.
-git tag -a v1.0.0 -m "EnvEdit 1.0.0"
-git push origin v1.0.0
+git commit -m "Prepare EnvEdit X.Y.Z"
+git push -u origin prepare-vX.Y.Z
+# Ouvrir et fusionner une PR vers main après succès de son check Linux.
+git switch main
+git pull --ff-only origin main
+# Attendre le succès des trois jobs de Validate main pour ce commit exact.
+git tag -a vX.Y.Z -m "EnvEdit X.Y.Z"
+git push origin vX.Y.Z
 ```
 
 La CI produit des builds Windows/macOS **expérimentaux** ; elle ne valide pas encore
