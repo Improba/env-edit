@@ -162,6 +162,12 @@ artefacts des runs. Le paquet macOS reste expérimental tant que son installatio
 ses parcours fonctionnels n'ont pas été vérifiés. Ne pas déplacer un tag déjà publié ;
 corriger sur une nouvelle version si nécessaire.
 
+Le workflow de publication attend désormais la réussite des trois builds et vérifie la
+présence du `.deb`, du `.exe` et du `.dmg` avant de créer la release en une seule étape.
+Les protections GitHub de `main`, des tags et des Actions sont décrites dans
+[`docs/GITHUB-SECURITY.md`](docs/GITHUB-SECURITY.md). Elles doivent être activées dans les
+paramètres du dépôt : le fichier de workflow ne suffit pas à protéger les références Git.
+
 Exemple pour `1.0.0` :
 
 ```bash
