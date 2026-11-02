@@ -110,4 +110,4 @@ jobs:
           gh release create "$RELEASE_TAG" release-assets/* \
             --verify-tag \
             --title "EnvEdit $RELEASE_TAG" \
-            --notes "Paquets Linux, Windows et macOS générés automatiquement après validation de main. L'installateur macOS reste expérimental et les installateurs ne sont pas signés ni notarisés."
+            --notes "Paquets Linux, Windows et macOS générés automatiquement après validation de main. L'installateur macOS reste expérimental. Son bundle porte une signature ad hoc vérifiable et n'est pas notarié. Les installateurs Linux et Windows ne sont pas signés."

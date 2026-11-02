@@ -34,6 +34,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "macOS": {
+      "signingIdentity": "-"
+    },
     "category": "DeveloperTool",
     "shortDescription": "Éditeur local et non destructif de fichiers .env"
   }
