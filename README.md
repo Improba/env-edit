@@ -23,7 +23,8 @@ format `.env`), `ACCEPTANCE.md` (tests) et `AGENTS.md` (instructions persistante
 
 - Application principale : Tauri 2, Vue 3/Quasar et cœur Rust.
 - Livraison actuellement validée : Ubuntu Linux en `.deb` et AppImage.
-- Cibles futures : Windows et macOS, dont la validation est différée.
+- Installateurs Windows et macOS disponibles à titre expérimental ; leur parité complète
+  avec Linux reste à valider.
 - Fonctionnement local et hors ligne.
 - Licence proposée : MIT (à confirmer par le propriétaire).
 
@@ -110,10 +111,12 @@ serveur de test avant la production.
 
 L'ajout persistant de projets, la découverte des `.env*`, le parseur Rust et la sauvegarde
 sûre sont fonctionnels sous Linux. Le remplacement atomique Windows est implémenté via
-`ReplaceFileW`, mais reste à compiler et valider sur un hôte Windows réel.
+`ReplaceFileW`, mais ses garanties restent à valider sur un hôte Windows réel.
 
-La validation et la distribution Windows/macOS sont explicitement différées. La priorité
-actuelle est une version Linux fiable et publiable, sans supprimer les chemins portables.
+La priorité reste une version Linux fiable. L'installateur macOS corrigé a été testé sur
+Apple Silicon : sa signature ad hoc a été vérifiée et son ouverture confirmée. Cela ne vaut
+pas validation de tous les parcours fonctionnels ou de la parité de sauvegarde macOS.
+L'installateur Windows a été essayé, mais sa parité complète reste également à valider.
 
 ```bash
 npm install
@@ -133,8 +136,8 @@ npm run tauri build -- --bundles deb,appimage
 ```
 
 Ils sont écrits sous `src-tauri/target/release/bundle/`. Le paquet Debian s'installe
-avec `sudo apt install ./EnvEdit_1.0.0_amd64.deb` depuis son dossier. L'AppImage se lance
-après `chmod +x EnvEdit_1.0.0_amd64.AppImage`. Ces paquets ne contiennent pas le backend
+avec `sudo apt install ./EnvEdit_1.0.1_amd64.deb` depuis son dossier. L'AppImage se lance
+après `chmod +x EnvEdit_1.0.1_amd64.AppImage`. Ces paquets ne contiennent pas le backend
 Python. Les projets locaux restent hors ligne ; seuls les projets SSH utilisent une
 connexion configurée explicitement par l'utilisateur.
 
@@ -157,9 +160,9 @@ si toutes ces étapes ont réussi. Un échec après la création du tag nécessi
 version : les tags `v*` sont protégés contre le déplacement et la suppression.
 Les fichiers sont joints directement à une **release publiée**
 et téléchargeables individuellement depuis GitHub Releases, sans décompresser les
-artefacts des runs. Le paquet macOS reste expérimental tant que son installation et
-ses parcours fonctionnels n'ont pas été vérifiés. Ne pas déplacer un tag déjà publié ;
-corriger sur une nouvelle version si nécessaire.
+artefacts des runs. Le paquet macOS reste expérimental : son installateur corrigé a été
+testé, mais les parcours fonctionnels et la parité de sauvegarde ne sont pas tous validés.
+Ne pas déplacer un tag déjà publié ; corriger sur une nouvelle version si nécessaire.
 
 Le workflow de publication attend désormais la réussite des trois builds et vérifie la
 présence du `.deb`, du `.exe` et du `.dmg` avant de créer la release en une seule étape.
