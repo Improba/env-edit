@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: read
-      actions: read
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -23,15 +22,6 @@ jobs:
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: node scripts/check-release-version.mjs "$RELEASE_TAG"
-      - name: Require successful preparation on main for this commit
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMIT_SHA: ${{ github.sha }}
-        run: |
-          gh api -X GET "repos/${{ github.repository }}/actions/workflows/prepare-release.yml/runs" \
-            -f head_sha="$COMMIT_SHA" -f branch=main -f event=push -f status=success \
-            --jq '.workflow_runs | any(.head_sha == env.COMMIT_SHA and .conclusion == "success")' \
-            | grep -qx true
       - name: Require tag on the current main commit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,6 +29,18 @@ jobs:
         run: |
           gh api "repos/${{ github.repository }}/git/ref/heads/main" --jq '.object.sha' \
             | grep -qx "$COMMIT_SHA"
+      - name: Linux test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
+      - run: npm ci
+      - run: npm test
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+      - name: Rust tests
+        run: cargo test --locked --manifest-path src-tauri/Cargo.toml
 
   build:
     needs: version

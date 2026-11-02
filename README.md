@@ -140,24 +140,22 @@ connexion configurée explicitement par l'utilisateur.
 
 ## Préparer une release GitHub
 
-La préparation se fait **en local à partir du dernier `main`**, puis se fusionne par PR
-une fois les contrôles réussis. Mettre d'abord `main` à jour, créer une branche courte,
+La préparation se fait **en local à partir du dernier `main`**, puis se fusionne par PR.
+Mettre d'abord `main` à jour, créer une branche courte,
 choisir la version cible et aligner `package.json`, `package-lock.json`,
 `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` et `src-tauri/tauri.conf.json`.
 Exécuter les tests et construire/essayer le `.deb` sur des fixtures sans secret réel.
 Faire une revue de sécurité et de qualité si nécessaire. Si un contrôle échoue,
-corriger sur la branche et recommencer. Fusionner seulement lorsque le check Linux de
-la PR est vert. Une branche `release/*` durable n'est pas imposée.
+corriger sur la branche et recommencer. Aucun workflow automatique ne tourne sur les PR
+ou les pushs vers `main` : la vérification locale est donc la responsabilité du mainteneur
+avant fusion. Une branche `release/*` durable n'est pas imposée.
 
-Après le push, attendre que `Validate main` soit vert pour le **SHA exact** retenu.
-Ce workflow exécute les tests frontend et Rust sous Linux et construit le `.deb` ;
-sur `main` seulement, il construit également les installateurs Windows et macOS
-expérimentaux. La PR ne lance que le job Linux. Le workflow du tag refuse de publier
-si le même commit n'est pas la pointe de `main` ou n'a pas réussi sur `main`.
-
-Créer alors le tag annoté `vX.Y.Z` sur ce commit. `Publish release` vérifie
-les versions et reconstruit les paquets pour ce même SHA, sans répéter les suites
-de tests déjà validées. Les fichiers sont joints directement à une **release publiée**
+Créer ensuite le tag annoté `vX.Y.Z` sur la pointe de `main`. Ce push est le **seul**
+déclencheur automatique : `Publish release` vérifie les versions et la pointe de `main`,
+exécute les tests frontend et Rust, construit les trois paquets, puis publie uniquement
+si toutes ces étapes ont réussi. Un échec après la création du tag nécessite une nouvelle
+version : les tags `v*` sont protégés contre le déplacement et la suppression.
+Les fichiers sont joints directement à une **release publiée**
 et téléchargeables individuellement depuis GitHub Releases, sans décompresser les
 artefacts des runs. Le paquet macOS reste expérimental tant que son installation et
 ses parcours fonctionnels n'ont pas été vérifiés. Ne pas déplacer un tag déjà publié ;
@@ -185,10 +183,9 @@ git diff --check
 git add package.json package-lock.json src-tauri/Cargo.toml src-tauri/Cargo.lock src-tauri/tauri.conf.json
 git commit -m "Prepare EnvEdit X.Y.Z"
 git push -u origin prepare-vX.Y.Z
-# Ouvrir et fusionner une PR vers main après succès de son check Linux.
+# Ouvrir et fusionner une PR vers main après la validation locale.
 git switch main
 git pull --ff-only origin main
-# Attendre le succès des trois jobs de Validate main pour ce commit exact.
 git tag -a vX.Y.Z -m "EnvEdit X.Y.Z"
 git push origin vX.Y.Z
 ```
