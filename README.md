@@ -195,8 +195,9 @@ git push origin vX.Y.Z
 
 La CI produit des builds Windows/macOS **expérimentaux** ; elle ne valide pas encore
 les parcours manuels et la parité de sauvegarde exigés par `ACCEPTANCE.md`. Leur
-distribution comme versions prises en charge reste différée. Les installateurs ne
-sont pas encore signés ni, pour macOS, notarisés. Aucun déploiement n'est déclenché
+distribution comme versions prises en charge reste différée. Le paquet macOS porte
+une signature ad hoc vérifiable. Il n'est pas notarié. Les installateurs Linux et
+Windows ne sont pas signés. Aucun déploiement n'est déclenché
 par une PR ni par un simple push sur `main`.
 
 La configuration réside dans `$XDG_CONFIG_HOME/envedit/catalog.json` (ou
