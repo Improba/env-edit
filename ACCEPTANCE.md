@@ -116,9 +116,11 @@ Le texte ci-dessus est une fixture de test sans secrets réels.
 
 ## Parité de la version portable
 
-> **Statut : différé.** La validation Windows/macOS est volontairement reportée. Cette
-> section reste la définition de parité future, mais ne bloque pas la prochaine version
-> Linux.
+> **Statut : partiel.** L'installateur macOS corrigé a été ouvert et sa signature ad hoc
+> vérifiée sur Apple Silicon le 02/11/2026 (voir la
+> [recette macOS](docs/recettes/20261030162015-signature-macos-valide-recette.md)).
+> La validation fonctionnelle et la parité de sauvegarde Windows/macOS restent différées ;
+> ce test de packaging ne clôt pas les critères ci-dessous.
 
 La migration Tauri n'est considérée terminée que si :
 
